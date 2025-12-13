@@ -56,6 +56,5 @@ function App() {
     </Router>
   );
 }
-//Hello everyone
 
 export default App;
