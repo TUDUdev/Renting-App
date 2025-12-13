@@ -7,7 +7,7 @@ import {
 } from "react-router-dom";
 import HomePage from "./pages/Homepage/HomePage";
 import LoginPage from "./pages/LoginPage/LoginPage";
-import RegisterPage from "./pages/RegisterPage/RegisterPage"
+import RegisterPage from "./pages/RegisterPage/RegisterPage";
 import AboutPage from "./pages/AboutPage/AboutPage";
 import PropertiesPage from "./pages/PropertyPage/PropertiesPage";
 import Navbar from "./Navbar/Navbar";
@@ -56,5 +56,6 @@ function App() {
     </Router>
   );
 }
+//Hello everyone
 
 export default App;
