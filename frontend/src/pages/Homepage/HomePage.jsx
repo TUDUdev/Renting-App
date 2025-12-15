@@ -8,7 +8,7 @@ const HomePage = () => {
     {
       id: 1,
       title: 'Modern Apartment Downtown',
-      price: '$1,200/month',
+      price: ' ₹1,200/month',
       location: 'New York, NY',
       bedrooms: 2,
       bathrooms: 1,
@@ -17,7 +17,7 @@ const HomePage = () => {
     {
       id: 2,
       title: 'Cozy Studio',
-      price: '$800/month',
+      price: ' ₹800/month',
       location: 'Chicago, IL',
       bedrooms: 1,
       bathrooms: 1,
@@ -26,7 +26,7 @@ const HomePage = () => {
     {
       id: 3,
       title: 'Luxury Villa',
-      price: '$3,500/month',
+      price: '₹,500/month',
       location: 'Miami, FL',
       bedrooms: 4,
       bathrooms: 3,
