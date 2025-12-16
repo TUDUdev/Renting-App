@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import './PropertyDetailPage.css';
+import axios from "axios";
+import { applyForRent } from '../../../services/rentApi';
 
 const PropertyDetailPage = () => {
   const { id } = useParams();
@@ -385,29 +387,32 @@ const PropertyDetailPage = () => {
     e.preventDefault();
     setSubmitting(true);
      // Simulate API call
-    
-    setTimeout(() => {
-      console.log('Rent application submitted:', {
-        propertyId: id,
-        ...rentForm
+     try{
+      await applyForRent({
+        propertyId: Number(id),
+        ...rentForm,
       });
-      setSubmitting(false);
+
       setSubmitSuccess(true);
       setShowRentForm(false);
-      
-      // Reset form after 5 seconds
-      setTimeout(() => {
+
+      setRentForm({
+        name:' ',
+        email:' ',
+        phone:' ',
+        moveInDate:' ',
+        message:' '
+      });
+      setTimeout(()=>{
         setSubmitSuccess(false);
-        setRentForm({
-          name: '',
-          email: '',
-          phone: '',
-          moveInDate: '',
-          message: ''
-        });
-      }, 5000);
-    }, 1500);
-  };
+      },5000);
+     }catch(error){
+      alert("Failed to submit application");
+      console.error(error);
+     }finally{
+      setSubmitting(false);
+     }};
+    
 
   const handleScheduleViewing = () => {
     navigate('/contact', { state: { propertyId: id, propertyTitle: property?.title } });

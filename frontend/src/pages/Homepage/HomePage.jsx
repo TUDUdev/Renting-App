@@ -7,7 +7,7 @@ const HomePage = () => {
   const properties = [
     {
       id: 1,
-      title: 'Modern Apartment Downtown',
+      title: 'BS Complex',
       price: ' ₹1,200/month',
       location: 'New York, NY',
       bedrooms: 2,
@@ -16,9 +16,9 @@ const HomePage = () => {
     },
     {
       id: 2,
-      title: 'Cozy Studio',
-      price: ' ₹800/month',
-      location: 'Chicago, IL',
+      title: 'Dalma view Studio Apartment',
+      price: ' ₹2000/night',
+      location: 'Baridih, Jamshedpur',
       bedrooms: 1,
       bathrooms: 1,
       image: 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w-800&auto=format&fit=crop'

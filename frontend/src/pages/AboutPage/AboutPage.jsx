@@ -13,17 +13,24 @@ const AboutPage = () => {
     },
     {
       id: 2,
-      name: 'Rekha Baskey',
+      name: 'Reshu Singh',
       role: 'CTO',
       image: '',
       description: 'Tech innovator passionate about property solutions'
     },
     {
       id: 3,
-      name: 'Renu Baskey',
+      name: 'Shashwat Pathak',
       role: 'Head of Operations',
       image: '',
       description: 'Ensuring smooth rental experiences'
+    },
+        {
+      id: 4,
+      name: 'Kishan Paul',
+      role: 'HR',
+      image:'',
+      description:'xyz'
     }
   ];
 
