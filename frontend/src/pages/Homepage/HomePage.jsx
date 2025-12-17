@@ -1,9 +1,19 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import './HomePage.css';
 
 const HomePage = () => {
+  const navigate = useNavigate();
+
+  const handleViewAll=()=>{
+    const isLoggedIn = localStorage.getItem("user");
+    if(isLoggedIn){
+      navigate("/properties");
+    }else{
+      navigate("/login")
+    }
+  }
   const properties = [
     {
       id: 1,
@@ -159,9 +169,9 @@ const HomePage = () => {
             ))}
           </div>
           <div className="text-center">
-            <Link to="/properties" className="btn btn-primary">
+            <button onClick={handleViewAll} className="btn btn-primary">
               View All Properties
-            </Link>
+            </button>
           </div>
         </div>
       </section>

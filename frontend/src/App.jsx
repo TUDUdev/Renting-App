@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -19,6 +19,13 @@ import Dashboard from "./pages/Dashboard/Dashboard";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = React.useState(false);
+
+  useEffect(()=>{
+    const user = localStorage.getItem("user");
+    if(user){
+      setIsLoggedIn(true);
+    }
+  },[]);
 
   return (
     <Router>
