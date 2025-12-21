@@ -2,9 +2,13 @@ import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import './HomePage.css';
+import { useEffect } from 'react';
+import { useState } from 'react';
 
 const HomePage = () => {
   const navigate = useNavigate();
+  const [properties, setProperties] = useState([]);
+
 
   const handleViewAll=()=>{
     const isLoggedIn = localStorage.getItem("user");
@@ -14,35 +18,22 @@ const HomePage = () => {
       navigate("/login")
     }
   }
-  const properties = [
-    {
-      id: 1,
-      title: 'BS Complex',
-      price: ' ₹1,200/month',
-      location: 'New York, NY',
-      bedrooms: 2,
-      bathrooms: 1,
-      image: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800&auto=format&fit=crop'
-    },
-    {
-      id: 2,
-      title: 'Dalma view Studio Apartment',
-      price: ' ₹2000/night',
-      location: 'Baridih, Jamshedpur',
-      bedrooms: 1,
-      bathrooms: 1,
-      image: 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w-800&auto=format&fit=crop'
-    },
-    {
-      id: 3,
-      title: 'Luxury Villa',
-      price: '₹,500/month',
-      location: 'Miami, FL',
-      bedrooms: 4,
-      bathrooms: 3,
-      image: 'https://images.unsplash.com/photo-1613977257363-707ba9348227?w=800&auto=format&fit=crop'
+
+  //Properties are shown through this
+  useEffect(() => {
+  const fetchProperties = async () => {
+    try {
+      const res = await fetch("http://localhost:5000/api/properties");
+      const data = await res.json();
+      setProperties(data); // state variable
+    } catch (err) {
+      console.error(err);
     }
-  ];
+  };
+
+  fetchProperties();
+}, []);
+
 
   const features = [
     {
@@ -146,7 +137,7 @@ const HomePage = () => {
           <div className="properties-grid">
             {properties.map((property, index) => (
               <motion.div 
-                key={property.id}
+                key={property._id}
                 className="property-card card"
                 initial={{ opacity: 0, scale: 0.9 }}
                 whileInView={{ opacity: 1, scale: 1 }}
@@ -154,7 +145,7 @@ const HomePage = () => {
                 transition={{ delay: index * 0.2 }}
                 whileHover={{ scale: 1.05 }}
               >
-                <div className="property-image" style={{ backgroundImage: `url(${property.image})` }} />
+                <div className="property-image" style={{ backgroundImage: `url(${property.images  && property.images[0]})` }} />
                 <div className="property-content">
                   <h3>{property.title}</h3>
                   <div className="property-details">
@@ -162,8 +153,18 @@ const HomePage = () => {
                     <span>🛏️ {property.bedrooms} Bed</span>
                     <span>🛁 {property.bathrooms} Bath</span>
                   </div>
-                  <div className="property-price">{property.price}</div>
-                  <button className="btn btn-primary">View Details</button>
+                  <div className="property-price">₹{property.price}</div>
+                  <button className="btn btn-primary"
+                      onClick={() => {
+                      const isLoggedIn = localStorage.getItem("user"); // or your auth check
+                      if (isLoggedIn) {
+                     navigate(`/property/${property._id}`);
+                    } else {
+                     navigate("/login");
+                    }
+                              }}
+                  >
+                    View Details</button>
                 </div>
               </motion.div>
             ))}

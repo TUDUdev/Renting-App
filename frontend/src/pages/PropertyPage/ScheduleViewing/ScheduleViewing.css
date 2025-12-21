@@ -1,0 +1,81 @@
+.schedule-page {
+  background: #f8f9fb;
+  min-height: 100vh;
+}
+
+/* Hero */
+.schedule-hero {
+  background: linear-gradient(135deg, #4f46e5, #6366f1);
+  color: #fff;
+  padding: 80px 0;
+  text-align: center;
+}
+
+.schedule-hero h1 {
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+}
+
+.schedule-hero p {
+  opacity: 0.9;
+  font-size: 1.1rem;
+}
+
+/* Container */
+.schedule-container {
+  display: flex;
+  justify-content: center;
+  margin-top: -60px;
+  padding-bottom: 80px;
+}
+
+/* Card */
+.schedule-card {
+  max-width: 520px;
+  width: 100%;
+  padding: 30px;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+}
+
+.schedule-title {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+/* Form */
+.schedule-form .form-group {
+  margin-bottom: 20px;
+}
+
+.schedule-form label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.schedule-form input,
+.schedule-form textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  font-size: 0.95rem;
+}
+
+.schedule-form textarea {
+  resize: none;
+  height: 90px;
+}
+
+/* Actions */
+.schedule-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 25px;
+}
+
+.schedule-actions .btn {
+  flex: 1;
+}

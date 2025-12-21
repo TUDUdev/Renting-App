@@ -7,137 +7,25 @@ const PropertiesPage = () => {
 
   const navigate = useNavigate();
 
-  // Mock properties data
-  const allProperties = [
-    {
-      id: 1,
-      title: 'Modern Apartment Downtown',
-      price: 1200,
-      location: 'New York, NY',
-      type: 'apartment',
-      bedrooms: 2,
-      bathrooms: 1,
-      sqft: 850,
-      available: true,
-      rating: 4.8,
-      reviews: 124,
-      description: 'Beautiful modern apartment in the heart of downtown with stunning city views.',
-      amenities: ['Pool', 'Gym', 'Parking', 'Laundry'],
-      image: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800&auto=format&fit=crop'
-    },
-    {
-      id: 2,
-      title: 'Cozy Studio',
-      price: 800,
-      location: 'Chicago, IL',
-      type: 'studio',
-      bedrooms: 1,
-      bathrooms: 1,
-      sqft: 550,
-      available: true,
-      rating: 4.5,
-      reviews: 89,
-      description: 'Perfect cozy studio for young professionals, close to public transport.',
-      amenities: ['Laundry', 'Pet Friendly'],
-      image: 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=800&auto=format&fit=crop'
-    },
-    {
-      id: 3,
-      title: 'Luxury Villa',
-      price: 3500,
-      location: 'Miami, FL',
-      type: 'villa',
-      bedrooms: 4,
-      bathrooms: 3,
-      sqft: 2200,
-      available: true,
-      rating: 4.9,
-      reviews: 45,
-      description: 'Stunning luxury villa with private pool and beach access.',
-      amenities: ['Pool', 'Gym', 'Parking', 'Garden', 'Security'],
-      image: 'https://images.unsplash.com/photo-1613977257363-707ba9348227?w=800&auto=format&fit=crop'
-    },
-    {
-      id: 4,
-      title: 'Suburban House',
-      price: 2000,
-      location: 'Austin, TX',
-      type: 'house',
-      bedrooms: 3,
-      bathrooms: 2,
-      sqft: 1500,
-      available: true,
-      rating: 4.7,
-      reviews: 67,
-      description: 'Spacious family home in a quiet suburban neighborhood with great schools.',
-      amenities: ['Garden', 'Parking', 'Pet Friendly'],
-      image: 'https://images.unsplash.com/photo-1518780664697-55e3ad937233?w=800&auto=format&fit=crop'
-    },
-    {
-      id: 5,
-      title: 'Penthouse Suite',
-      price: 5000,
-      location: 'Los Angeles, CA',
-      type: 'penthouse',
-      bedrooms: 3,
-      bathrooms: 2.5,
-      sqft: 1800,
-      available: false,
-      rating: 4.9,
-      reviews: 32,
-      description: 'Luxurious penthouse with panoramic views of the city skyline.',
-      amenities: ['Pool', 'Gym', 'Concierge', 'Parking', 'Roof Terrace'],
-      image: 'https://images.unsplash.com/photo-1505843513577-22bb7d21e455?w=800&auto=format&fit=crop'
-    },
-    {
-      id: 6,
-      title: 'Garden Apartment',
-      price: 950,
-      location: 'Portland, OR',
-      type: 'apartment',
-      bedrooms: 1,
-      bathrooms: 1,
-      sqft: 650,
-      available: true,
-      rating: 4.4,
-      reviews: 56,
-      description: 'Charming garden-level apartment with private patio and shared garden.',
-      amenities: ['Garden', 'Pet Friendly', 'Laundry'],
-      image: 'https://images.unsplash.com/photo-1558036117-15e82a2c9a9a?w=800&auto=format&fit=crop'
-    },
-    {
-      id: 7,
-      title: 'Modern Loft',
-      price: 1800,
-      location: 'Seattle, WA',
-      type: 'loft',
-      bedrooms: 2,
-      bathrooms: 1,
-      sqft: 1100,
-      available: true,
-      rating: 4.6,
-      reviews: 78,
-      description: 'Industrial-style loft with exposed brick and high ceilings.',
-      amenities: ['Parking', 'Laundry', 'High Ceilings'],
-      image: 'https://images.unsplash.com/photo-1499916078039-922301b0eb9b?w=800&auto=format&fit=crop'
-    },
-    {
-      id: 8,
-      title: 'Beachfront Condo',
-      price: 2800,
-      location: 'San Diego, CA',
-      type: 'condo',
-      bedrooms: 2,
-      bathrooms: 2,
-      sqft: 1200,
-      available: true,
-      rating: 4.8,
-      reviews: 92,
-      description: 'Beautiful beachfront condo with ocean views and direct beach access.',
-      amenities: ['Pool', 'Gym', 'Beach Access', 'Parking'],
-      image: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&auto=format&fit=crop'
+  const [allProperties, setAllProperties] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  //Data came from here
+  useEffect(() => {
+  const fetchProperties = async () => {
+    try {
+      const res = await fetch("http://localhost:5000/api/properties");
+      const data = await res.json();
+      setAllProperties(data);
+    } catch (error) {
+      console.error("Error fetching properties:", error);
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
+
+  fetchProperties();
+}, []);
 
   // State for filters
   const [filters, setFilters] = useState({
@@ -200,7 +88,7 @@ const PropertiesPage = () => {
       case 'price-desc':
         return b.price - a.price;
       case 'rating-desc':
-        return b.rating - a.rating;
+        return (b.rating || 0) - (a.rating || 0);
       case 'bedrooms-desc':
         return b.bedrooms - a.bedrooms;
       case 'sqft-desc':
@@ -239,13 +127,14 @@ const PropertiesPage = () => {
   };
 
   // Toggle favorite
-  const toggleFavorite = (id) => {
-    if (favorites.includes(id)) {
-      setFavorites(favorites.filter(favId => favId !== id));
-    } else {
-      setFavorites([...favorites, id]);
-    }
-  };
+    const toggleFavorite = (id) => {
+  setFavorites((prev) =>
+    prev.includes(id)
+      ? prev.filter((fav) => fav !== id)
+      : [...prev, id]
+  );
+};
+
 
   // Reset filters
   const resetFilters = () => {
@@ -300,8 +189,13 @@ const PropertiesPage = () => {
     { value: '4', label: '4+ Bedrooms' }
   ];
 
-  
+    if (loading) {
+    return <div className="loading">Loading properties...</div>;
+  }
 
+  if (allProperties.length === 0) {
+    return <div className="no-properties">No properties found.</div>;
+  }
   return (
     <div className="properties-page">
       {/* Hero Section */}
@@ -490,7 +384,7 @@ const PropertiesPage = () => {
                 >
                   {currentProperties.map((property, index) => (
                     <motion.div
-                      key={property.id}
+                      key={property._id}
                       className="property-card card"
                       initial={{ opacity: 0, scale: 0.9 }}
                       animate={{ opacity: 1, scale: 1 }}
@@ -500,9 +394,9 @@ const PropertiesPage = () => {
                       {/* Favorite Button */}
                       <button 
                         className="favorite-btn"
-                        onClick={() => toggleFavorite(property.id)}
+                        onClick={() => toggleFavorite(property._id)}
                       >
-                        {favorites.includes(property.id) ? '❤️' : '🤍'}
+                        {favorites.includes(property._id) ? '❤️' : '🤍'}
                       </button>
 
                       {/* Status Badge */}
@@ -515,7 +409,7 @@ const PropertiesPage = () => {
                       {/* Property Image */}
                       <div 
                         className="property-image"
-                        style={{ backgroundImage: `url(${property.image})` }}
+                        style={{  backgroundImage: `url(${property.images && property.images.length > 0 ? property.images[0] : '/placeholder.png'})` }}
                       >
                         <div className="price-tag">
                           ₹{property.price}<span>/month</span>
@@ -576,11 +470,12 @@ const PropertiesPage = () => {
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
                             disabled={!property.available}
+                            onClick={()=>navigate(`/schedule/${property._id}`,{state: property,})}
                           >
                             {property.available ? 'Schedule Viewing' : 'Not Available'}
                           </motion.button>
                           <button 
-                            className="btn btn-secondary" onClick={() => navigate(`/property/${property.id}`)}>
+                            className="btn btn-secondary" onClick={() => navigate(`/property/${property._id}`)}>
                                 View Details
                               </button>
                         </div>

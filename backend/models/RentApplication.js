@@ -1,9 +1,11 @@
+//User can apply for rent
 const mongoose = require("mongoose");
 
 const rentApplicationSchema = new mongoose.Schema(
   {
     propertyId: {
-      type: Number,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Property",
       required: true,
     },
     name: {
@@ -13,6 +15,7 @@ const rentApplicationSchema = new mongoose.Schema(
     email: {
       type: String,
       required: true,
+      lowercase: true,
     },
     phone: {
       type: String,
@@ -24,6 +27,7 @@ const rentApplicationSchema = new mongoose.Schema(
     },
     message: {
       type: String,
+      trim: true,
     },
   },
   { timestamps: true }

@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import './PropertyDetailPage.css';
+import React, { useState, useEffect } from "react";
+import { useParams, useNavigate, Link } from "react-router-dom";
+import { motion } from "framer-motion";
+import "./PropertyDetailPage.css";
 import axios from "axios";
-import { applyForRent } from '../../../services/rentApi';
+import { applyForRent } from "../../../services/rentApi";
 
 const PropertyDetailPage = () => {
   const { id } = useParams();
@@ -13,383 +13,54 @@ const PropertyDetailPage = () => {
   const [selectedImages, setSelectedImages] = useState([]);
   const [activeImage, setActiveImage] = useState(0);
   const [rentForm, setRentForm] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    moveInDate: '',
-    message: ''
+    name: "",
+    email: "",
+    phone: "",
+    moveInDate: "",
+    message: "",
   });
   const [showRentForm, setShowRentForm] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
 
-  // Mock property data - in real app, this would come from an API
-  const allProperties = [
-    {
-      id: 1,
-      title: 'Modern Apartment Downtown',
-      price: 1200,
-      location: 'New York, NY',
-      type: 'apartment',
-      bedrooms: 2,
-      bathrooms: 1,
-      sqft: 850,
-      available: true,
-      rating: 4.8,
-      reviews: 124,
-      description: 'Beautiful modern apartment in the heart of downtown with stunning city views. Recently renovated with high-end finishes, this apartment features an open floor plan perfect for entertaining.',
-      detailedDescription: 'This stunning modern apartment is located in the heart of downtown, offering breathtaking city views from every room. The open-concept living area features floor-to-ceiling windows, allowing natural light to flood the space. The kitchen boasts quartz countertops, stainless steel appliances, and a spacious island perfect for meal preparation.',
-      amenities: ['Swimming Pool', 'Fitness Center', 'Parking Garage', 'Laundry Facilities', 'Concierge Service', 'Rooftop Terrace'],
-      features: ['Central Air Conditioning', 'Hardwood Floors', 'In-Unit Washer/Dryer', 'Dishwasher', 'Balcony', 'Pet Friendly'],
-      address: '123 Main Street, New York, NY 10001',
-      yearBuilt: 2020,
-      deposit: 2400,
-      leaseTerm: '12 months',
-      images: [
-        'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=1200&auto=format&fit=crop',
-        'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=1200&auto=format&fit=crop',
-        'https://images.unsplash.com/photo-1499916078039-922301b0eb9b?w=1200&auto=format&fit=crop',
-        'https://images.unsplash.com/photo-1558036117-15e82a2c9a9a?w=1200&auto=format&fit=crop',
-        'https://images.unsplash.com/photo-1505843513577-22bb7d21e455?w=1200&auto=format&fit=crop'
-      ],
-      landlord: {
-        name: 'John Smith',
-        phone: '(555) 123-4567',
-        email: 'john@premiumproperties.com',
-        company: 'Premium Properties LLC'
-      },
-      availabilityDate: '2024-01-15',
-      utilitiesIncluded: ['Water', 'Trash'],
-      utilitiesNotIncluded: ['Electricity', 'Internet']
-    },
-   {
-      id: 2,
-      title: 'Cozy Studio',
-      price: 800,
-      location: 'Chicago, IL',
-      type: 'studio',
-      bedrooms: 1,
-      bathrooms: 1,
-      sqft: 550,
-      available: true,
-      rating: 4.8,
-      reviews: 124,
-      description: 'Beautiful modern apartment in the heart of downtown with stunning city views. Recently renovated with high-end finishes, this apartment features an open floor plan perfect for entertaining.',
-      detailedDescription: 'This stunning modern apartment is located in the heart of downtown, offering breathtaking city views from every room. The open-concept living area features floor-to-ceiling windows, allowing natural light to flood the space. The kitchen boasts quartz countertops, stainless steel appliances, and a spacious island perfect for meal preparation.',
-      amenities: ['Swimming Pool', 'Fitness Center', 'Parking Garage', 'Laundry Facilities', 'Concierge Service', 'Rooftop Terrace'],
-      features: ['Central Air Conditioning', 'Hardwood Floors', 'In-Unit Washer/Dryer', 'Dishwasher', 'Balcony', 'Pet Friendly'],
-      address: '123 Main Street, New York, NY 10001',
-      yearBuilt: 2020,
-      deposit: 2400,
-      leaseTerm: '12 months',
-      images: [
-        'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=1200&auto=format&fit=crop',
-        'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=1200&auto=format&fit=crop',
-        'https://images.unsplash.com/photo-1499916078039-922301b0eb9b?w=1200&auto=format&fit=crop',
-        'https://images.unsplash.com/photo-1558036117-15e82a2c9a9a?w=1200&auto=format&fit=crop',
-        'https://images.unsplash.com/photo-1505843513577-22bb7d21e455?w=1200&auto=format&fit=crop'
-      ],
-      landlord: {
-        name: 'John Smith',
-        phone: '(555) 123-4567',
-        email: 'john@premiumproperties.com',
-        company: 'Premium Properties LLC'
-      },
-      availabilityDate: '2024-01-15',
-      utilitiesIncluded: ['Water', 'Trash'],
-      utilitiesNotIncluded: ['Electricity', 'Internet']
-    },
-       {
-      id: 3,
-      title: 'Cozy Studio',
-      price: 800,
-      location: 'Chicago, IL',
-      type: 'studio',
-      bedrooms: 1,
-      bathrooms: 1,
-      sqft: 550,
-      available: true,
-      rating: 4.8,
-      reviews: 124,
-      description: 'Beautiful modern apartment in the heart of downtown with stunning city views. Recently renovated with high-end finishes, this apartment features an open floor plan perfect for entertaining.',
-      detailedDescription: 'This stunning modern apartment is located in the heart of downtown, offering breathtaking city views from every room. The open-concept living area features floor-to-ceiling windows, allowing natural light to flood the space. The kitchen boasts quartz countertops, stainless steel appliances, and a spacious island perfect for meal preparation.',
-      amenities: ['Swimming Pool', 'Fitness Center', 'Parking Garage', 'Laundry Facilities', 'Concierge Service', 'Rooftop Terrace'],
-      features: ['Central Air Conditioning', 'Hardwood Floors', 'In-Unit Washer/Dryer', 'Dishwasher', 'Balcony', 'Pet Friendly'],
-      address: '123 Main Street, New York, NY 10001',
-      yearBuilt: 2020,
-      deposit: 2400,
-      leaseTerm: '12 months',
-      images: [
-        'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=1200&auto=format&fit=crop',
-        'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=1200&auto=format&fit=crop',
-        'https://images.unsplash.com/photo-1499916078039-922301b0eb9b?w=1200&auto=format&fit=crop',
-        'https://images.unsplash.com/photo-1558036117-15e82a2c9a9a?w=1200&auto=format&fit=crop',
-        'https://images.unsplash.com/photo-1505843513577-22bb7d21e455?w=1200&auto=format&fit=crop'
-      ],
-      landlord: {
-        name: 'John Smith',
-        phone: '(555) 123-4567',
-        email: 'john@premiumproperties.com',
-        company: 'Premium Properties LLC'
-      },
-      availabilityDate: '2024-01-15',
-      utilitiesIncluded: ['Water', 'Trash'],
-      utilitiesNotIncluded: ['Electricity', 'Internet']
-    },
-       {
-      id: 4,
-      title: 'Cozy Studio',
-      price: 800,
-      location: 'Chicago, IL',
-      type: 'studio',
-      bedrooms: 1,
-      bathrooms: 1,
-      sqft: 550,
-      available: true,
-      rating: 4.8,
-      reviews: 124,
-      description: 'Beautiful modern apartment in the heart of downtown with stunning city views. Recently renovated with high-end finishes, this apartment features an open floor plan perfect for entertaining.',
-      detailedDescription: 'This stunning modern apartment is located in the heart of downtown, offering breathtaking city views from every room. The open-concept living area features floor-to-ceiling windows, allowing natural light to flood the space. The kitchen boasts quartz countertops, stainless steel appliances, and a spacious island perfect for meal preparation.',
-      amenities: ['Swimming Pool', 'Fitness Center', 'Parking Garage', 'Laundry Facilities', 'Concierge Service', 'Rooftop Terrace'],
-      features: ['Central Air Conditioning', 'Hardwood Floors', 'In-Unit Washer/Dryer', 'Dishwasher', 'Balcony', 'Pet Friendly'],
-      address: '123 Main Street, New York, NY 10001',
-      yearBuilt: 2020,
-      deposit: 2400,
-      leaseTerm: '12 months',
-      images: [
-        'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=1200&auto=format&fit=crop',
-        'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=1200&auto=format&fit=crop',
-        'https://images.unsplash.com/photo-1499916078039-922301b0eb9b?w=1200&auto=format&fit=crop',
-        'https://images.unsplash.com/photo-1558036117-15e82a2c9a9a?w=1200&auto=format&fit=crop',
-        'https://images.unsplash.com/photo-1505843513577-22bb7d21e455?w=1200&auto=format&fit=crop'
-      ],
-      landlord: {
-        name: 'John Smith',
-        phone: '(555) 123-4567',
-        email: 'john@premiumproperties.com',
-        company: 'Premium Properties LLC'
-      },
-      availabilityDate: '2024-01-15',
-      utilitiesIncluded: ['Water', 'Trash'],
-      utilitiesNotIncluded: ['Electricity', 'Internet']
-    },
-        {
-      id: 5,
-      title: 'Cozy Studio',
-      price: 800,
-      location: 'Chicago, IL',
-      type: 'studio',
-      bedrooms: 1,
-      bathrooms: 1,
-      sqft: 550,
-      available: true,
-      rating: 4.8,
-      reviews: 124,
-      description: 'Beautiful modern apartment in the heart of downtown with stunning city views. Recently renovated with high-end finishes, this apartment features an open floor plan perfect for entertaining.',
-      detailedDescription: 'This stunning modern apartment is located in the heart of downtown, offering breathtaking city views from every room. The open-concept living area features floor-to-ceiling windows, allowing natural light to flood the space. The kitchen boasts quartz countertops, stainless steel appliances, and a spacious island perfect for meal preparation.',
-      amenities: ['Swimming Pool', 'Fitness Center', 'Parking Garage', 'Laundry Facilities', 'Concierge Service', 'Rooftop Terrace'],
-      features: ['Central Air Conditioning', 'Hardwood Floors', 'In-Unit Washer/Dryer', 'Dishwasher', 'Balcony', 'Pet Friendly'],
-      address: '123 Main Street, New York, NY 10001',
-      yearBuilt: 2020,
-      deposit: 2400,
-      leaseTerm: '12 months',
-      images: [
-        'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=1200&auto=format&fit=crop',
-        'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=1200&auto=format&fit=crop',
-        'https://images.unsplash.com/photo-1499916078039-922301b0eb9b?w=1200&auto=format&fit=crop',
-        'https://images.unsplash.com/photo-1558036117-15e82a2c9a9a?w=1200&auto=format&fit=crop',
-        'https://images.unsplash.com/photo-1505843513577-22bb7d21e455?w=1200&auto=format&fit=crop'
-      ],
-      landlord: {
-        name: 'John Smith',
-        phone: '(555) 123-4567',
-        email: 'john@premiumproperties.com',
-        company: 'Premium Properties LLC'
-      },
-      availabilityDate: '2024-01-15',
-      utilitiesIncluded: ['Water', 'Trash'],
-      utilitiesNotIncluded: ['Electricity', 'Internet']
-    },
-       {
-      id: 6,
-      title: 'Cozy Studio',
-      price: 800,
-      location: 'Chicago, IL',
-      type: 'studio',
-      bedrooms: 1,
-      bathrooms: 1,
-      sqft: 550,
-      available: true,
-      rating: 4.8,
-      reviews: 124,
-      description: 'Beautiful modern apartment in the heart of downtown with stunning city views. Recently renovated with high-end finishes, this apartment features an open floor plan perfect for entertaining.',
-      detailedDescription: 'This stunning modern apartment is located in the heart of downtown, offering breathtaking city views from every room. The open-concept living area features floor-to-ceiling windows, allowing natural light to flood the space. The kitchen boasts quartz countertops, stainless steel appliances, and a spacious island perfect for meal preparation.',
-      amenities: ['Swimming Pool', 'Fitness Center', 'Parking Garage', 'Laundry Facilities', 'Concierge Service', 'Rooftop Terrace'],
-      features: ['Central Air Conditioning', 'Hardwood Floors', 'In-Unit Washer/Dryer', 'Dishwasher', 'Balcony', 'Pet Friendly'],
-      address: '123 Main Street, New York, NY 10001',
-      yearBuilt: 2020,
-      deposit: 2400,
-      leaseTerm: '12 months',
-      images: [
-        'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=1200&auto=format&fit=crop',
-        'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=1200&auto=format&fit=crop',
-        'https://images.unsplash.com/photo-1499916078039-922301b0eb9b?w=1200&auto=format&fit=crop',
-        'https://images.unsplash.com/photo-1558036117-15e82a2c9a9a?w=1200&auto=format&fit=crop',
-        'https://images.unsplash.com/photo-1505843513577-22bb7d21e455?w=1200&auto=format&fit=crop'
-      ],
-      landlord: {
-        name: 'John Smith',
-        phone: '(555) 123-4567',
-        email: 'john@premiumproperties.com',
-        company: 'Premium Properties LLC'
-      },
-      availabilityDate: '2024-01-15',
-      utilitiesIncluded: ['Water', 'Trash'],
-      utilitiesNotIncluded: ['Electricity', 'Internet']
-    },
-        {
-      id: 7,
-      title: 'Cozy Studio',
-      price: 800,
-      location: 'Chicago, IL',
-      type: 'studio',
-      bedrooms: 1,
-      bathrooms: 1,
-      sqft: 550,
-      available: true,
-      rating: 4.8,
-      reviews: 124,
-      description: 'Beautiful modern apartment in the heart of downtown with stunning city views. Recently renovated with high-end finishes, this apartment features an open floor plan perfect for entertaining.',
-      detailedDescription: 'This stunning modern apartment is located in the heart of downtown, offering breathtaking city views from every room. The open-concept living area features floor-to-ceiling windows, allowing natural light to flood the space. The kitchen boasts quartz countertops, stainless steel appliances, and a spacious island perfect for meal preparation.',
-      amenities: ['Swimming Pool', 'Fitness Center', 'Parking Garage', 'Laundry Facilities', 'Concierge Service', 'Rooftop Terrace'],
-      features: ['Central Air Conditioning', 'Hardwood Floors', 'In-Unit Washer/Dryer', 'Dishwasher', 'Balcony', 'Pet Friendly'],
-      address: '123 Main Street, New York, NY 10001',
-      yearBuilt: 2020,
-      deposit: 2400,
-      leaseTerm: '12 months',
-      images: [
-        'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=1200&auto=format&fit=crop',
-        'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=1200&auto=format&fit=crop',
-        'https://images.unsplash.com/photo-1499916078039-922301b0eb9b?w=1200&auto=format&fit=crop',
-        'https://images.unsplash.com/photo-1558036117-15e82a2c9a9a?w=1200&auto=format&fit=crop',
-        'https://images.unsplash.com/photo-1505843513577-22bb7d21e455?w=1200&auto=format&fit=crop'
-      ],
-      landlord: {
-        name: 'John Smith',
-        phone: '(555) 123-4567',
-        email: 'john@premiumproperties.com',
-        company: 'Premium Properties LLC'
-      },
-      availabilityDate: '2024-01-15',
-      utilitiesIncluded: ['Water', 'Trash'],
-      utilitiesNotIncluded: ['Electricity', 'Internet']
-    },
-       {
-      id: 8,
-      title: 'Cozy Studio',
-      price: 800,
-      location: 'Chicago, IL',
-      type: 'studio',
-      bedrooms: 1,
-      bathrooms: 1,
-      sqft: 550,
-      available: true,
-      rating: 4.8,
-      reviews: 124,
-      description: 'Beautiful modern apartment in the heart of downtown with stunning city views. Recently renovated with high-end finishes, this apartment features an open floor plan perfect for entertaining.',
-      detailedDescription: 'This stunning modern apartment is located in the heart of downtown, offering breathtaking city views from every room. The open-concept living area features floor-to-ceiling windows, allowing natural light to flood the space. The kitchen boasts quartz countertops, stainless steel appliances, and a spacious island perfect for meal preparation.',
-      amenities: ['Swimming Pool', 'Fitness Center', 'Parking Garage', 'Laundry Facilities', 'Concierge Service', 'Rooftop Terrace'],
-      features: ['Central Air Conditioning', 'Hardwood Floors', 'In-Unit Washer/Dryer', 'Dishwasher', 'Balcony', 'Pet Friendly'],
-      address: '123 Main Street, New York, NY 10001',
-      yearBuilt: 2020,
-      deposit: 2400,
-      leaseTerm: '12 months',
-      images: [
-        'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=1200&auto=format&fit=crop',
-        'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=1200&auto=format&fit=crop',
-        'https://images.unsplash.com/photo-1499916078039-922301b0eb9b?w=1200&auto=format&fit=crop',
-        'https://images.unsplash.com/photo-1558036117-15e82a2c9a9a?w=1200&auto=format&fit=crop',
-        'https://images.unsplash.com/photo-1505843513577-22bb7d21e455?w=1200&auto=format&fit=crop'
-      ],
-      landlord: {
-        name: 'John Smith',
-        phone: '(555) 123-4567',
-        email: 'john@premiumproperties.com',
-        company: 'Premium Properties LLC'
-      },
-      availabilityDate: '2024-01-15',
-      utilitiesIncluded: ['Water', 'Trash'],
-      utilitiesNotIncluded: ['Electricity', 'Internet']
-    },
-        {
-      id: 9,
-      title: 'Cozy Studio',
-      price: 800,
-      location: 'Chicago, IL',
-      type: 'studio',
-      bedrooms: 1,
-      bathrooms: 1,
-      sqft: 550,
-      available: true,
-      rating: 4.8,
-      reviews: 124,
-      description: 'Beautiful modern apartment in the heart of downtown with stunning city views. Recently renovated with high-end finishes, this apartment features an open floor plan perfect for entertaining.',
-      detailedDescription: 'This stunning modern apartment is located in the heart of downtown, offering breathtaking city views from every room. The open-concept living area features floor-to-ceiling windows, allowing natural light to flood the space. The kitchen boasts quartz countertops, stainless steel appliances, and a spacious island perfect for meal preparation.',
-      amenities: ['Swimming Pool', 'Fitness Center', 'Parking Garage', 'Laundry Facilities', 'Concierge Service', 'Rooftop Terrace'],
-      features: ['Central Air Conditioning', 'Hardwood Floors', 'In-Unit Washer/Dryer', 'Dishwasher', 'Balcony', 'Pet Friendly'],
-      address: '123 Main Street, New York, NY 10001',
-      yearBuilt: 2020,
-      deposit: 2400,
-      leaseTerm: '12 months',
-      images: [
-        'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=1200&auto=format&fit=crop',
-        'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=1200&auto=format&fit=crop',
-        'https://images.unsplash.com/photo-1499916078039-922301b0eb9b?w=1200&auto=format&fit=crop',
-        'https://images.unsplash.com/photo-1558036117-15e82a2c9a9a?w=1200&auto=format&fit=crop',
-        'https://images.unsplash.com/photo-1505843513577-22bb7d21e455?w=1200&auto=format&fit=crop'
-      ],
-      landlord: {
-        name: 'John Smith',
-        phone: '(555) 123-4567',
-        email: 'john@premiumproperties.com',
-        company: 'Premium Properties LLC'
-      },
-      availabilityDate: '2024-01-15',
-      utilitiesIncluded: ['Water', 'Trash'],
-      utilitiesNotIncluded: ['Electricity', 'Internet']
-    },
-
-  ];
-
+  // property data come from an API
   useEffect(() => {
-    // Simulate API call
-    const timer = setTimeout(() => {
-      const foundProperty = allProperties.find(p => p.id === parseInt(id));
-      if (foundProperty) {
-        setProperty(foundProperty);
-        setSelectedImages(foundProperty.images || [foundProperty.image]);
-      }
-      setLoading(false);
-    }, 500);
+    const fetchProperty = async () => {
+      if (!id) return; // prevents  undefined
+      try {
+        const { data } = await axios.get(
+          `http://localhost:5000/api/properties/${id}`
+        );
 
-    return () => clearTimeout(timer);
+        setProperty(data);
+        setSelectedImages(data.images || []);
+        setActiveImage(0);
+      } catch (error) {
+        console.error(error);
+        setProperty(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProperty();
   }, [id]);
 
   const handleRentFormChange = (e) => {
     const { name, value } = e.target;
-    setRentForm(prev => ({
+    setRentForm((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
   const handleRentSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
-     // Simulate API call
-     try{
+    // Simulate API call
+    try {
       await applyForRent({
-        propertyId: Number(id),
+        propertyId: id,
         ...rentForm,
       });
 
@@ -397,28 +68,28 @@ const PropertyDetailPage = () => {
       setShowRentForm(false);
 
       setRentForm({
-        name:' ',
-        email:' ',
-        phone:' ',
-        moveInDate:' ',
-        message:' '
+        name: "",
+        email: "",
+        phone: "",
+        moveInDate: "",
+        message: "",
       });
-      setTimeout(()=>{
+      setTimeout(() => {
         setSubmitSuccess(false);
-      },5000);
-     }catch(error){
-      alert("Failed to submit application");
+      }, 5000);
+    } catch (error) {
+      alert(error.message || "Failed to submit application");
       console.error(error);
-     }finally{
+    } finally {
       setSubmitting(false);
-     }};
-    
-
-  const handleScheduleViewing = () => {
-    navigate('/contact', { state: { propertyId: id, propertyTitle: property?.title } });
+    }
   };
 
-  
+  const handleScheduleViewing = () => {
+    navigate("/contact", {
+      state: { propertyId: id, propertyTitle: property?.title },
+    });
+  };
 
   if (loading) {
     return (
@@ -446,15 +117,15 @@ const PropertyDetailPage = () => {
       {/* Hero Section with Images */}
       <section className="property-hero">
         <div className="container">
-          <motion.div 
+          <motion.div
             className="breadcrumb"
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
           >
             <Link to="/properties">Properties</Link> &gt; {property.title}
           </motion.div>
-          
-          <motion.div 
+
+          <motion.div
             className="property-header"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -475,16 +146,18 @@ const PropertyDetailPage = () => {
           {/* Left Column - Images & Details */}
           <main className="property-main-content">
             {/* Image Gallery */}
-            <motion.div 
+            <motion.div
               className="image-gallery"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.3 }}
             >
               <div className="main-image-container">
-                <div 
+                <div
                   className="main-image"
-                  style={{ backgroundImage: `url(${selectedImages[activeImage]})` }}
+                  style={{
+                    backgroundImage: `url(${selectedImages[activeImage]})`,
+                  }}
                 />
                 {!property.available && (
                   <div className="property-status unavailable">
@@ -492,16 +165,18 @@ const PropertyDetailPage = () => {
                   </div>
                 )}
               </div>
-              
+
               {selectedImages.length > 1 && (
                 <div className="thumbnail-gallery">
                   {selectedImages.map((img, index) => (
                     <button
                       key={index}
-                      className={`thumbnail ${index === activeImage ? 'active' : ''}`}
+                      className={`thumbnail ${
+                        index === activeImage ? "active" : ""
+                      }`}
                       onClick={() => setActiveImage(index)}
                     >
-                      <div 
+                      <div
                         className="thumbnail-image"
                         style={{ backgroundImage: `url(${img})` }}
                       />
@@ -512,18 +187,23 @@ const PropertyDetailPage = () => {
             </motion.div>
 
             {/* Property Details */}
-            <motion.section 
+            <motion.section
               className="property-details-section"
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
             >
               <h2>Property Details</h2>
-              
+
               <div className="details-grid">
                 <div className="detail-item">
                   <span className="detail-label">Property Type:</span>
-                  <span className="detail-value">{property.type.charAt(0).toUpperCase() + property.type.slice(1)}</span>
+                  <span className="detail-value">
+                    {property.type
+                      ? property.type.charAt(0).toUpperCase() +
+                        property.type.slice(1)
+                      : "N/A"}
+                  </span>
                 </div>
                 <div className="detail-item">
                   <span className="detail-label">Bedrooms:</span>
@@ -551,21 +231,25 @@ const PropertyDetailPage = () => {
                 </div>
                 <div className="detail-item">
                   <span className="detail-label">Availability:</span>
-                  <span className="detail-value">{property.availabilityDate}</span>
+                  <span className="detail-value">
+                    {property.availabilityDate}
+                  </span>
                 </div>
               </div>
             </motion.section>
 
             {/* Description */}
-            <motion.section 
+            <motion.section
               className="description-section"
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5 }}
             >
               <h2>Description</h2>
-              <p className="main-description">{property.detailedDescription || property.description}</p>
-              
+              <p className="main-description">
+                {property.detailedDescription || property.description}
+              </p>
+
               <div className="description-grid">
                 <div className="description-column">
                   <h3>Features</h3>
@@ -577,15 +261,24 @@ const PropertyDetailPage = () => {
                       </li>
                     )) || (
                       <>
-                        <li><span className="check-icon">✓</span> Central Air Conditioning</li>
-                        <li><span className="check-icon">✓</span> Hardwood Floors</li>
-                        <li><span className="check-icon">✓</span> Modern Kitchen</li>
-                        <li><span className="check-icon">✓</span> Ample Storage</li>
+                        <li>
+                          <span className="check-icon">✓</span> Central Air
+                          Conditioning
+                        </li>
+                        <li>
+                          <span className="check-icon">✓</span> Hardwood Floors
+                        </li>
+                        <li>
+                          <span className="check-icon">✓</span> Modern Kitchen
+                        </li>
+                        <li>
+                          <span className="check-icon">✓</span> Ample Storage
+                        </li>
                       </>
                     )}
                   </ul>
                 </div>
-                
+
                 <div className="description-column">
                   <h3>Amenities</h3>
                   <ul className="amenities-list">
@@ -601,7 +294,7 @@ const PropertyDetailPage = () => {
             </motion.section>
 
             {/* Utilities */}
-            <motion.section 
+            <motion.section
               className="utilities-section"
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
@@ -631,7 +324,7 @@ const PropertyDetailPage = () => {
 
           {/* Right Column - Rent Section & Contact */}
           <aside className="property-sidebar">
-            <motion.div 
+            <motion.div
               className="rent-card sticky-card"
               initial={{ opacity: 0, x: 50 }}
               animate={{ opacity: 1, x: 0 }}
@@ -641,10 +334,16 @@ const PropertyDetailPage = () => {
                 <span className="price">₹{property.price}</span>
                 <span className="period">/month</span>
               </div>
-              
+
               <div className="rent-status">
-                <div className={`status-badge ${property.available ? 'available' : 'unavailable'}`}>
-                  {property.available ? 'Available Now' : 'Currently Unavailable'}
+                <div
+                  className={`status-badge ${
+                    property.available ? "available" : "unavailable"
+                  }`}
+                >
+                  {property.available
+                    ? "Available Now"
+                    : "Currently Unavailable"}
                 </div>
                 <div className="rating">
                   <span className="stars">★★★★★</span>
@@ -652,9 +351,9 @@ const PropertyDetailPage = () => {
                   <span className="reviews">({property.reviews} reviews)</span>
                 </div>
               </div>
-              
+
               {submitSuccess && (
-                <motion.div 
+                <motion.div
                   className="success-message"
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
@@ -662,16 +361,16 @@ const PropertyDetailPage = () => {
                   ✅ Application submitted successfully! We'll contact you soon.
                 </motion.div>
               )}
-              
+
               {showRentForm ? (
-                <motion.form 
+                <motion.form
                   className="rent-form"
                   initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
+                  animate={{ opacity: 1, height: "auto" }}
                   onSubmit={handleRentSubmit}
                 >
                   <h3>Apply to Rent</h3>
-                  
+
                   <div className="form-group">
                     <label htmlFor="name">Full Name *</label>
                     <input
@@ -684,7 +383,7 @@ const PropertyDetailPage = () => {
                       placeholder="John Doe"
                     />
                   </div>
-                  
+
                   <div className="form-group">
                     <label htmlFor="email">Email *</label>
                     <input
@@ -697,7 +396,7 @@ const PropertyDetailPage = () => {
                       placeholder="john@example.com"
                     />
                   </div>
-                  
+
                   <div className="form-group">
                     <label htmlFor="phone">Phone Number *</label>
                     <input
@@ -710,7 +409,7 @@ const PropertyDetailPage = () => {
                       placeholder="(555) 123-4567"
                     />
                   </div>
-                  
+
                   <div className="form-group">
                     <label htmlFor="moveInDate">Desired Move-In Date *</label>
                     <input
@@ -720,10 +419,10 @@ const PropertyDetailPage = () => {
                       value={rentForm.moveInDate}
                       onChange={handleRentFormChange}
                       required
-                      min={new Date().toISOString().split('T')[0]}
+                      min={new Date().toISOString().split("T")[0]}
                     />
                   </div>
-                  
+
                   <div className="form-group">
                     <label htmlFor="message">Additional Information</label>
                     <textarea
@@ -735,7 +434,7 @@ const PropertyDetailPage = () => {
                       rows="4"
                     />
                   </div>
-                  
+
                   <div className="form-actions">
                     <button
                       type="button"
@@ -750,7 +449,7 @@ const PropertyDetailPage = () => {
                       className="btn btn-primary"
                       disabled={submitting}
                     >
-                      {submitting ? 'Submitting...' : 'Submit Application'}
+                      {submitting ? "Submitting..." : "Submit Application"}
                     </button>
                   </div>
                 </motion.form>
@@ -763,9 +462,9 @@ const PropertyDetailPage = () => {
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                   >
-                    {property.available ? 'Apply to Rent' : 'Not Available'}
+                    {property.available ? "Apply to Rent" : "Not Available"}
                   </motion.button>
-                  
+
                   <motion.button
                     className="btn btn-secondary"
                     onClick={handleScheduleViewing}
@@ -774,13 +473,13 @@ const PropertyDetailPage = () => {
                   >
                     Schedule Viewing
                   </motion.button>
-                  
+
                   <button className="btn btn-outline favorite-btn">
                     ♡ Save Property
                   </button>
                 </div>
               )}
-              
+
               <div className="landlord-info">
                 <h3>Contact Landlord</h3>
                 <div className="landlord-details">
@@ -796,7 +495,7 @@ const PropertyDetailPage = () => {
                   </div>
                 </div>
               </div>
-              
+
               <div className="property-summary">
                 <h3>Quick Facts</h3>
                 <ul>
@@ -814,7 +513,7 @@ const PropertyDetailPage = () => {
       </div>
 
       {/* Back to Properties Button */}
-      <motion.div 
+      <motion.div
         className="back-button-container"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}

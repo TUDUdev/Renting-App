@@ -1,3 +1,4 @@
+//For renting Property
 const API = "http://localhost:5000/api/rent";
 
 export const applyForRent = async (data) => {

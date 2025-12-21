@@ -16,6 +16,7 @@ import PropertyDetailPage from "./pages/PropertyDetailsPage/PropertyDetailPage";
 import "./App.css";
 import ProtectedRoute from "./ProtectedRoute";
 import Dashboard from "./pages/Dashboard/Dashboard";
+import ScheduleViewing from "./pages/PropertyPage/ScheduleViewing/ScheduleViewing";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = React.useState(false);
@@ -57,6 +58,7 @@ function App() {
           />
           <Route path="*" element={<Navigate to="/" />} />
           <Route path="/property/:id" element={<PropertyDetailPage />} />
+          <Route path="/schedule/:id" element={<ScheduleViewing />} />
         </Routes>
         <Footer />
       </div>
