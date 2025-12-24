@@ -19,10 +19,9 @@ const Dashboard = () => {
 
   return (
     <div className="dashboard-container">
-
       {/* Welcome Card */}
       <div className="dashboard-card">
-        <h2>Welcome back, {user?.name} 👋</h2>
+        <h2>Welcome back, {user.email} 👋</h2>
         <p>Your dashboard gives you quick access to everything you need.</p>
 
         <div className="dashboard-links">
@@ -68,6 +67,14 @@ const Dashboard = () => {
           <Link to="/properties?type=villa">🏡 Villas</Link>
         </div>
       </div>
+             {/* Rent Your House */}
+<div className="dashboard-card">
+  <h3>Rent Your House</h3>
+  <p>List your property and reach potential tenants quickly.</p>
+  <Link to="/dashboard/rent" className="rent-btn">
+    🏠 Rent Your House
+  </Link>
+</div>
 
 
     </div>

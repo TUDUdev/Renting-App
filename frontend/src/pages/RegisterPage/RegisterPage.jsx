@@ -62,28 +62,22 @@ const RegisterPage = () => {
     return newErrors;
   };
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  const validationErrors = validateForm();
-
-  if (Object.keys(validationErrors).length === 0) {
-    try {
-      const result = await registerUser(formData);
-
-      if (result.message === "Signup successful") {
-        alert("Registration successful! Please login.");
-        navigate("/login");
-      } else {
-        alert(result.message);
-      }
-    } catch (error) {
-      alert("Error connecting to server");
-      console.error(error);
+   const handleSubmit = async (e) => {
+    e.preventDefault();
+    const validationErrors = validateForm();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
     }
-  } else {
-    setErrors(validationErrors);
-  }
-};
+
+    const result = await registerUser(formData);
+    if (result.message === "Signup successful") {
+      alert("Registration successful! You can now log in.");
+      navigate("/login");
+    } else {
+      alert(result.message);
+    }
+  };
 
   return (
     <div className="register-page">

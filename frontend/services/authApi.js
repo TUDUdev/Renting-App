@@ -1,19 +1,38 @@
-const API = "http://localhost:5000/api/authen";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { auth } from "../firebase/firebaseConfig";
 
-export const registerUser = async (data) => {
-  const res = await fetch(`${API}/register`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data)
-  });
-  return await res.json();
+// Register
+export const registerUser = async (formData) => {
+  try {
+    const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
+    await updateProfile(userCredential.user, { displayName: formData.name });
+
+    return {
+      message: "Signup successful",
+      user: {
+        uid: userCredential.user.uid,
+        email: userCredential.user.email,
+        displayName: userCredential.user.displayName,
+      },
+    };
+  } catch (error) {
+    return { message: error.message };
+  }
 };
 
-export const loginUser = async (data) => {
-  const res = await fetch(`${API}/Login`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data)
-  });
-  return await res.json();
+// Login
+export const loginUser = async (formData) => {
+  try {
+    const userCredential = await signInWithEmailAndPassword(auth, formData.email, formData.password);
+    return {
+      message: "Login successful",
+      user: {
+        uid: userCredential.user.uid,
+        email: userCredential.user.email,
+        displayName: userCredential.user.displayName,
+      },
+    };
+  } catch (error) {
+    return { message: error.message };
+  }
 };

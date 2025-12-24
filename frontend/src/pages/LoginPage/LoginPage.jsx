@@ -3,6 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import "./LoginPage.css";
 import { loginUser } from "../../../services/authApi";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../../../firebase/firebaseConfig";
 
 const LoginPage = ({ setIsLoggedIn }) => {
   const [formData, setFormData] = useState({
@@ -11,6 +13,8 @@ const LoginPage = ({ setIsLoggedIn }) => {
   });
   const [errors, setErrors] = useState({});
   const navigate = useNavigate();
+
+  
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -46,30 +50,60 @@ const LoginPage = ({ setIsLoggedIn }) => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    const validationErrors = validateForm();
+  e.preventDefault();
 
-    if (Object.keys(validationErrors).length === 0) {
-      try {
-        const result = await loginUser(formData);
+  const validationErrors = validateForm();
+  if (Object.keys(validationErrors).length > 0) {
+    setErrors(validationErrors);
+    return;
+  }
 
-        if (result.message === "Login successful") {
-          setIsLoggedIn(true);
-          //Store user data in localStorage
-          localStorage.setItem("user", JSON.stringify(result.user));
-          navigate("/properties");
-          alert("Login successful");
-        } else {
-          alert(result.message);
-        }
-      } catch (error) {
-        alert("Error connecting to server");
-        console.error(error);
-      }
-    } else {
-      setErrors(validationErrors);
-    }
-  };
+  try {
+    const userCredential = await signInWithEmailAndPassword(
+      auth,
+      formData.email,
+      formData.password
+    );
+
+    const user = userCredential.user;
+
+    setIsLoggedIn(true);
+    localStorage.setItem(
+      "user",
+      JSON.stringify({
+        uid: user.uid,
+        email: user.email,
+      })
+    );
+
+    alert("Login successful");
+    navigate("/properties");
+  } catch (error) {
+    
+  let message = "Login failed";
+
+  switch (error.code) {
+    case "auth/invalid-credential":
+      message = "Invalid email or password";
+      break;
+
+    case "auth/invalid-email":
+      message = "Invalid email format";
+      break;
+
+    case "auth/too-many-requests":
+      message = "Too many attempts. Please try again later.";
+      break;
+
+    default:
+      message = error.message;
+  }
+
+  alert(message);
+}
+
+};
+
 
   return (
     <div className="login-page">

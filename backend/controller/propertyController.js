@@ -4,7 +4,14 @@ const Property = require("../models/Property");
 // GET /api/properties/:id
 exports.getPropertyById = async (req, res) => {
   try {
-    const property = await Property.findById(req.params.id);
+    const { id } = req.params;
+
+    // Check if ID is a valid MongoDB ObjectId
+    if (!id.match(/^[0-9a-fA-F]{24}$/)) {
+      return res.status(400).json({ message: "Invalid property ID" });
+    }
+
+    const property = await Property.findById(id);
 
     if (!property) {
       return res.status(404).json({ message: "Property not found" });
@@ -12,6 +19,8 @@ exports.getPropertyById = async (req, res) => {
 
     res.status(200).json(property);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error("Error fetching property:", error.message);
+    res.status(500).json({ message: "Server error" });
   }
 };
+

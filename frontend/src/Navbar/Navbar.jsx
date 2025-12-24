@@ -1,22 +1,30 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth';
 import './Navbar.css';
 
 const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
+  const auth = getAuth();
 
-  // Load username from localStorage
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
-  }, [isLoggedIn]); // recheck when login status changes
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      if (firebaseUser) {
+        setUser(firebaseUser);
+        setIsLoggedIn(true);
+      } else {
+        setUser(null);
+        setIsLoggedIn(false);
+      }
+    });
 
-  const handleLogout = () => {
-    localStorage.removeItem("user");
+    return () => unsubscribe();
+  }, []);
+
+  const handleLogout = async () => {
+    await signOut(auth);
     setIsLoggedIn(false);
     navigate('/');
   };
@@ -44,7 +52,7 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
               <>
                 {/* SHOW USERNAME HERE */}
                 <span className="nav-username">
-                  👤 {user.name}
+                  👤 {user.displayName || user.email}
                 </span>
 
                 <Link to="/dashboard" className="nav-link">Dashboard</Link>

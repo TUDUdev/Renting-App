@@ -1,9 +1,12 @@
 const express = require("express");
-const { register, Login } = require("../controller/authController");
+const { register, login } = require("../controller/authController"); // Firebase controllers
 
 const router = express.Router();
 
-router.post("/register", register);
-router.post("/login", Login);
+// Signup route
+router.post("/signup", register);
+
+// Login route
+router.post("/login", login);
 
 module.exports = router;
