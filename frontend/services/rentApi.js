@@ -14,6 +14,5 @@ export const applyForRent = async (data) => {
     const error = await res.json();
     throw new Error(error.message || "Failed to submit application");
   }
-
   return res.json();
 };

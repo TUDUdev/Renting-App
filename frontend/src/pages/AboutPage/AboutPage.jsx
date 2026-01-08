@@ -1,8 +1,10 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import './AboutPage.css';
+import { Link,useNavigate } from 'react-router-dom';
 
 const AboutPage = () => {
+  const navigate = useNavigate();
   const teamMembers = [
     {
       id: 1,
@@ -189,13 +191,17 @@ const AboutPage = () => {
         >
           <h2>Join the RentEase Community</h2>
           <p>Be part of the future of renting</p>
-          <motion.button 
-            className="btn btn-primary"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            Get Started Today
-          </motion.button>
+          <motion.button
+  className="btn btn-primary"
+  whileHover={{ scale: 1.05 }}
+  whileTap={{ scale: 0.95 }}
+  onClick={() => {
+    navigate("/"); // change to your new page route
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }}
+>
+  Get Started Today
+</motion.button>
         </motion.div>
       </section>
     </div>

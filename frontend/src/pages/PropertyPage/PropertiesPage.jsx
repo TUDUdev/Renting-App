@@ -1,15 +1,35 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
+import { addToWishlist, removeFromWishlist, isInWishlist } from '../../../utils/wishlist';
 import './PropertiesPage.css';
 
 const PropertiesPage = () => {
-
   const navigate = useNavigate();
-
   const [allProperties, setAllProperties] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  // Store property in Recently Viewed
+const addToRecentViews = (property) => {
+  const propertyToStore = {
+    id: property._id,
+    title: property.title,
+    image: property.images?.[0] || "",
+    type: property.type
+  };
+  const history = JSON.parse(localStorage.getItem("recentViews")) || [];
+  const filtered = history.filter(item => item.id !== propertyToStore.id);
+  filtered.unshift(propertyToStore);
+  localStorage.setItem("recentViews", JSON.stringify(filtered.slice(0, 10)));
+};
+//Wishlist
+const toggleWishlist = (property) => {
+  if (isInWishlist(property._id)) {
+    removeFromWishlist(property._id);
+    setFavorites(prev => prev.filter(fav => fav !== property._id));
+  } else {
+    addToWishlist(property);
+    setFavorites(prev => [...prev, property._id]);
+  }};
   //Data came from here
   useEffect(() => {
   const fetchProperties = async () => {
@@ -21,12 +41,9 @@ const PropertiesPage = () => {
       console.error("Error fetching properties:", error);
     } finally {
       setLoading(false);
-    }
-  };
-
+    } };
   fetchProperties();
 }, []);
-
   // State for filters
   const [filters, setFilters] = useState({
     location: '',
@@ -36,26 +53,23 @@ const PropertiesPage = () => {
     bedrooms: '',
     available: 'all'
   });
-
   // State for sorting
   const [sortBy, setSortBy] = useState('price-asc');
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(6);
   const [showFilters, setShowFilters] = useState(false);
   const [favorites, setFavorites] = useState([]);
-
   // Filter and sort properties
   const filteredProperties = allProperties.filter(property => {
     // Location filter
     if (filters.location && !property.location.toLowerCase().includes(filters.location.toLowerCase())) {
       return false;
     }
-    
+  
     // Type filter
     if (filters.type && property.type !== filters.type) {
       return false;
     }
-    
     // Price range filter
     if (filters.minPrice && property.price < parseInt(filters.minPrice)) {
       return false;
@@ -63,12 +77,10 @@ const PropertiesPage = () => {
     if (filters.maxPrice && property.price > parseInt(filters.maxPrice)) {
       return false;
     }
-    
     // Bedrooms filter
     if (filters.bedrooms && property.bedrooms !== parseInt(filters.bedrooms)) {
       return false;
     }
-    
     // Availability filter
     if (filters.available === 'available' && !property.available) {
       return false;
@@ -392,12 +404,13 @@ const PropertiesPage = () => {
                       whileHover={{ y: -10, transition: { duration: 0.2 } }}
                     >
                       {/* Favorite Button */}
-                      <button 
-                        className="favorite-btn"
-                        onClick={() => toggleFavorite(property._id)}
-                      >
-                        {favorites.includes(property._id) ? '❤️' : '🤍'}
-                      </button>
+                      <button
+  className="favorite-btn"
+  onClick={() => toggleWishlist(property)}
+>
+  {isInWishlist(property._id) ? '❤️' : '🤍'}
+</button>
+
 
                       {/* Status Badge */}
                       {!property.available && (
@@ -465,17 +478,19 @@ const PropertiesPage = () => {
                         </div>
 
                         <div className="property-actions">
-                          <motion.button 
+                          {/* <motion.button 
                             className="btn btn-primary"
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
                             disabled={!property.available}
-                            onClick={()=>navigate(`/schedule/${property._id}`,{state: property,})}
+                            onClick={()=>{addToRecentViews(property); // ✅ Add property to localStorage
+                              navigate(`/schedule/${property._id}`,{state: property,})}}
                           >
                             {property.available ? 'Schedule Viewing' : 'Not Available'}
-                          </motion.button>
+                          </motion.button> */}
                           <button 
-                            className="btn btn-secondary" onClick={() => navigate(`/property/${property._id}`)}>
+                            className="btn btn-secondary" onClick={() => { addToRecentViews(property);  // ✅ Add property to localStorage
+                            navigate(`/property/${property._id}`)}}>
                                 View Details
                               </button>
                         </div>

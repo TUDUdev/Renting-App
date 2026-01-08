@@ -4,15 +4,35 @@ import { motion } from 'framer-motion';
 import './HomePage.css';
 import { useEffect } from 'react';
 import { useState } from 'react';
+import { getAuth } from 'firebase/auth';
 
 const HomePage = () => {
   const navigate = useNavigate();
   const [properties, setProperties] = useState([]);
+ const addToRecentViews = (property) => {
+  const item = {
+    id: property._id,
+    title: property.title,
+    image: property.images?.[0] || "",
+    type: property.type || "",
+  };
 
+  let history = JSON.parse(localStorage.getItem("recentViews")) || [];
+
+  // remove duplicate
+  history = history.filter(h => h.id !== item.id);
+
+  // add to start
+  history.unshift(item);
+
+  // keep last 10
+  localStorage.setItem("recentViews", JSON.stringify(history.slice(0, 10)));
+};
 
   const handleViewAll=()=>{
-    const isLoggedIn = localStorage.getItem("user");
-    if(isLoggedIn){
+    const auth = getAuth();
+    const user = auth.currentUser;
+    if(user){
       navigate("/properties");
     }else{
       navigate("/login")
@@ -153,12 +173,14 @@ const HomePage = () => {
                     <span>🛏️ {property.bedrooms} Bed</span>
                     <span>🛁 {property.bathrooms} Bath</span>
                   </div>
-                  <div className="property-price">₹{property.price}</div>
+                  <div className="property-price">₹{property.price}/month</div>
                   <button className="btn btn-primary"
                       onClick={() => {
-                      const isLoggedIn = localStorage.getItem("user"); // or your auth check
-                      if (isLoggedIn) {
-                     navigate(`/property/${property._id}`);
+                      const auth = getAuth();
+                      const user = auth.currentUser;
+                      if (user) {
+                      {addToRecentViews(property); // ✅ Add property to localStorage
+                     navigate(`/property/${property._id}`);}
                     } else {
                      navigate("/login");
                     }

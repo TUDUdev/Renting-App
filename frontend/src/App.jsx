@@ -18,6 +18,10 @@ import ProtectedRoute from "./ProtectedRoute";
 import Dashboard from "./pages/Dashboard/Dashboard";
 import ScheduleViewing from "./pages/PropertyPage/ScheduleViewing/ScheduleViewing";
 import RentProperty from "./pages/RentProperty/RentProperty";
+import ForgotPassword from "./pages/ForgotPassword/ForgotPassword";
+import FavoritesPage from "./pages/Favourite/FavouritePage";
+import Profile from "./pages/Profile/Profile";
+import ScrollToTop from "./ScrollToTop";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = React.useState(false);
@@ -31,6 +35,7 @@ function App() {
 
   return (
     <Router>
+      <ScrollToTop/>
       <div className="App">
         <Navbar isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
         <Routes>
@@ -59,9 +64,11 @@ function App() {
           />
           <Route path="*" element={<Navigate to="/" />} />
           <Route path="/property/:id" element={<PropertyDetailPage />} />
-          <Route path="/schedule/:id" element={<ScheduleViewing />} />
-          <Route path="/schedule/:id" element={<ScheduleViewing />} />
+          {/* <Route path="/schedule/:id" element={<ScheduleViewing />} /> */}
            <Route path="/dashboard/rent" element={<RentProperty />} />
+           <Route path="/favorites" element={<FavoritesPage />} />
+           <Route path="/forgot-password" element={<ForgotPassword />} />
+           <Route path="/profile" element={<Profile />} />
         </Routes>
         <Footer />
       </div>

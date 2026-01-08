@@ -1,0 +1,155 @@
+/* FavoritesPage.css */
+
+.favorites-page {
+  padding: 40px 20px;
+  background-color: #f9f9fb;
+  min-height: 100vh;
+  font-family: 'Inter', sans-serif;
+}
+
+.favorites-page h2 {
+  font-size: 2rem;
+  margin-bottom: 20px;
+  color: #333;
+  text-align: center;
+}
+
+.favorites-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.favorite-card {
+  background-color: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  position: relative;
+}
+
+.favorite-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+}
+
+/* Property Image */
+.favorite-image {
+  width: 100%;
+  height: 180px;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+}
+
+/* Price Tag */
+.favorite-card .price-tag {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  background-color: #667eea;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+/* Content Section */
+.favorite-content {
+  padding: 15px 20px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.favorite-content h3 {
+  font-size: 1.2rem;
+  margin-bottom: 8px;
+  color: #222;
+}
+
+.favorite-content p {
+  font-size: 0.95rem;
+  color: #555;
+  margin-bottom: 10px;
+}
+
+.favorite-content .actions {
+  display: flex;
+  gap: 10px;
+  margin-top: auto;
+}
+
+.favorite-content .btn {
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+}
+
+.favorite-content .btn-primary {
+  background-color: #667eea;
+  color: white;
+}
+
+.favorite-content .btn-primary:hover {
+  background-color: #5a67d8;
+}
+
+.favorite-content .btn-secondary {
+  background-color: #edf2f7;
+  color: #333;
+}
+
+.favorite-content .btn-secondary:hover {
+  background-color: #e2e8f0;
+}
+
+/* Empty State */
+.favorites-page p {
+  text-align: center;
+  font-size: 1rem;
+  color: #555;
+  margin-top: 30px;
+}
+
+.remove-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  color: #ff4d4f;
+  transition: color 0.2s ease;
+}
+
+.remove-btn:hover {
+  color: #d9363e;
+}
+
+/* Responsive */
+@media screen and (max-width: 768px) {
+  .favorites-grid {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  }
+
+  .favorite-image {
+    height: 150px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .favorites-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .favorite-content {
+    padding: 12px 15px;
+  }
+}

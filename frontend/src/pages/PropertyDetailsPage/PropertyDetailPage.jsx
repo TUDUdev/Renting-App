@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import "./PropertyDetailPage.css";
 import axios from "axios";
 import { applyForRent } from "../../../services/rentApi";
+import { addToWishlist, removeFromWishlist, isInWishlist } from "../../../utils/wishlist";
 
 const PropertyDetailPage = () => {
   const { id } = useParams();
@@ -22,6 +23,15 @@ const PropertyDetailPage = () => {
   const [showRentForm, setShowRentForm] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
+  const handleFavoriteClick = () => {
+  if (isInWishlist(property._id)) {
+    removeFromWishlist(property._id);
+  } else {
+    addToWishlist(property);
+  }
+  // force re-render
+  setProperty({ ...property });
+};
 
   // property data come from an API
   useEffect(() => {
@@ -85,11 +95,11 @@ const PropertyDetailPage = () => {
     }
   };
 
-  const handleScheduleViewing = () => {
-    navigate("/contact", {
-      state: { propertyId: id, propertyTitle: property?.title },
-    });
-  };
+  // const handleScheduleViewing = () => {
+  //   navigate("/contact", {
+  //     state: { propertyId: id, propertyTitle: property?.title },
+  //   });
+  // };
 
   if (loading) {
     return (
@@ -465,18 +475,19 @@ const PropertyDetailPage = () => {
                     {property.available ? "Apply to Rent" : "Not Available"}
                   </motion.button>
 
-                  <motion.button
+                  {/* <motion.button
                     className="btn btn-secondary"
                     onClick={handleScheduleViewing}
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                   >
                     Schedule Viewing
-                  </motion.button>
+                  </motion.button> */}
 
-                  <button className="btn btn-outline favorite-btn">
-                    ♡ Save Property
-                  </button>
+                  <button className="btn btn-outline favorite-btn" onClick={handleFavoriteClick}>
+  {isInWishlist(property._id) ? '❤️ Saved' : '♡ Save Property'}
+</button>
+
                 </div>
               )}
 
@@ -503,7 +514,7 @@ const PropertyDetailPage = () => {
                   <li>🛏️ {property.bedrooms} Bedrooms</li>
                   <li>🛁 {property.bathrooms} Bathrooms</li>
                   <li>📏 {property.sqft} Square Feet</li>
-                  <li>💰 ${property.deposit} Security Deposit</li>
+                  <li>💰 ₹{property.deposit} Security Deposit</li>
                   <li>📅 {property.leaseTerm} Lease</li>
                 </ul>
               </div>

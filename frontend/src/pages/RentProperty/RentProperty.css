@@ -70,12 +70,95 @@
   color: #aaa;
 }
 
+/* Detailed Description */
+.big-textarea {
+  grid-column: span 2;   /* full width */
+  min-height: 200px;     /* bigger typing area */
+  resize: vertical;      /* user can expand further */
+}
+
+
+/* ---------- TAG LIST SECTIONS (Features / Amenities / Utilities) ---------- */
+
+.tag-section {
+  grid-column: span 2;              /* full width row */
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.tag-section label {
+  font-weight: 600;
+  color: #333;
+}
+
+.tag-input {
+  display: flex;
+  gap: 10px;
+}
+
+.tag-input input {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.tag-input button {
+  padding: 10px 14px;
+  border-radius: 6px;
+  border: none;
+  background: #007bff;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.25s;
+}
+
+.tag-input button:hover {
+  background: #0056b3;
+}
+
+.tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.tag {
+  background: #eef3ff;
+  border: 1px solid #b9c4ff;
+  padding: 5px 10px;
+  border-radius: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.tag button {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+  color: #333;
+}
+
+.tag button:hover {
+  color: #ff4b4b;
+}
+
+/* ---------- Responsive ---------- */
+
 @media (max-width: 768px) {
   .rent-property-container form {
     grid-template-columns: 1fr;
   }
 
   .rent-property-container form button {
+    grid-column: span 1;
+  }
+
+  .tag-section {
     grid-column: span 1;
   }
 }
