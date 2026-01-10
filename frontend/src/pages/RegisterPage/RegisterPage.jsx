@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import './RegisterPage.css';
+import { createUserWithEmailAndPassword, signOut } from "firebase/auth";
+import { auth } from "../../../firebase/firebaseConfig";
 import { registerUser } from '../../../services/authApi';
 
 const RegisterPage = () => {
@@ -62,22 +64,36 @@ const RegisterPage = () => {
     return newErrors;
   };
 
-   const handleSubmit = async (e) => {
-    e.preventDefault();
-    const validationErrors = validateForm();
-    if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors);
-      return;
-    }
+const handleSubmit = async (e) => {
+  e.preventDefault();
 
+  const validationErrors = validateForm();
+  if (Object.keys(validationErrors).length > 0) {
+    setErrors(validationErrors);
+    return;
+  }
+
+  try {
+    // ❌ DO NOT keep user logged in
+    await createUserWithEmailAndPassword(
+      auth,
+      formData.email,
+      formData.password
+    );
+
+    // ✅ IMMEDIATELY LOGOUT
+    await signOut(auth);
+
+    // Backend registration
     const result = await registerUser(formData);
-    if (result.message === "Signup successful") {
-      alert("Registration successful! You can now log in.");
-      navigate("/login");
-    } else {
-      alert(result.message);
-    }
-  };
+
+    alert("Signup successful! Please login.");
+    navigate("/login");
+  } catch (error) {
+    alert(error.message);
+  }
+};
+
 
   return (
     <div className="register-page">

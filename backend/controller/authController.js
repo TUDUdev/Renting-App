@@ -1,69 +1,56 @@
-const { admin, db } = require("./authen");
-const { createUser, getUser } = require("../models/User"); // your Firebase User helper
+const { admin } = require("./authen");
+const { createUser, getUser } = require("../models/User");
 
-// SIGNUP CONTROLLER
+// SIGNUP (NO LOGIN TOKEN ISSUED)
 const register = async (req, res) => {
-  const { name, email, password } = req.body;
+  const { name, email, password, phone } = req.body;
 
-  if (!name || !email || !password) {
-    return res.status(400).json({ message: "Name, email, and password are required" });
+  if (!name || !email || !password || !phone) {
+    return res.status(400).json({ message: "All fields are required" });
   }
 
   try {
-    // Check if user already exists in Firebase Auth
-    let userRecord;
-    try {
-      userRecord = await admin.auth().getUserByEmail(email);
-      return res.status(400).json({ message: "User already exists" });
-    } catch (err) {
-      // User does not exist, continue to create
-    }
-
-    // Create user in Firebase Auth
-    const newUser = await admin.auth().createUser({
+    const userRecord = await admin.auth().createUser({
       email,
       password,
       displayName: name,
+      phoneNumber: `+91${phone}`,
     });
 
-    // Save user in Firestore using helper
-    const userData = await createUser({
-      uid: newUser.uid,
-      name: newUser.displayName,
-      email: newUser.email,
+    await createUser({
+      uid: userRecord.uid,
+      name,
+      email,
+      phone,
     });
 
-    res.status(201).json({ message: "Signup successful", user: userData });
+    return res.status(201).json({
+      message: "Signup successful — please login",
+    });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Signup failed", error: error.message });
+    return res.status(400).json({ message: error.message });
   }
 };
 
-// LOGIN CONTROLLER
+// LOGIN (TOKEN VERIFIED ONLY)
 const login = async (req, res) => {
   const { idToken } = req.body;
 
   if (!idToken) {
-    return res.status(400).json({ message: "ID token is required" });
+    return res.status(400).json({ message: "ID token required" });
   }
 
   try {
-    // Verify the ID token from frontend Firebase Auth
-    const decodedToken = await admin.auth().verifyIdToken(idToken);
-    const uid = decodedToken.uid;
-
-    // Get user from Firestore
-    const user = await getUser(uid);
+    const decoded = await admin.auth().verifyIdToken(idToken);
+    const user = await getUser(decoded.uid);
 
     if (!user) {
-      return res.status(404).json({ message: "User not found in database" });
+      return res.status(404).json({ message: "User not found" });
     }
 
     res.status(200).json({ message: "Login successful", user });
-  } catch (error) {
-    console.error(error);
-    res.status(401).json({ message: "Invalid ID token", error: error.message });
+  } catch (err) {
+    res.status(401).json({ message: "Invalid token" });
   }
 };
 

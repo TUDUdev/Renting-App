@@ -1,44 +1,63 @@
-import React, { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth';
-import './Navbar.css';
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
+import "./Navbar.css";
 
 const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
   const navigate = useNavigate();
-  const [user, setUser] = useState(null);
   const auth = getAuth();
+  const [username, setUsername] = useState("");
+
+  const loadUsername = (user) => {
+    if (!user) {
+      setUsername("");
+      return;
+    }
+
+    // Firebase first
+    if (user.displayName) {
+      setUsername(user.displayName);
+      return;
+    }
+
+    // localStorage fallback
+    const storedUser = JSON.parse(localStorage.getItem("user"));
+    setUsername(storedUser?.displayName || "User");
+  };
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
-      if (firebaseUser) {
-        setUser(firebaseUser);
-        setIsLoggedIn(true);
-      } else {
-        setUser(null);
-        setIsLoggedIn(false);
-      }
+    // 🔐 Login / Logout
+    const unsub = onAuthStateChanged(auth, (user) => {
+      setIsLoggedIn(!!user);
+      loadUsername(user);
     });
 
-    return () => unsubscribe();
+    // 🔔 Profile update listener
+    const profileListener = () => {
+      loadUsername(auth.currentUser);
+    };
+
+    window.addEventListener("profileUpdated", profileListener);
+
+    return () => {
+      unsub();
+      window.removeEventListener("profileUpdated", profileListener);
+    };
   }, []);
 
   const handleLogout = async () => {
     await signOut(auth);
+    localStorage.removeItem("user");
     setIsLoggedIn(false);
-    navigate('/');
+    setUsername("");
+    navigate("/");
   };
 
   return (
-    <motion.nav 
-      className="navbar"
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      transition={{ duration: 0.5 }}
-    >
+    <motion.nav className="navbar" initial={{ y: -100 }} animate={{ y: 0 }}>
       <div className="container">
         <div className="navbar-content">
-
           <Link to="/" className="logo">
             <span className="logo-text">RentEase</span>
             <span className="logo-tagline">Find Your Perfect Space</span>
@@ -48,15 +67,11 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
             <Link to="/" className="nav-link">Home</Link>
             <Link to="/about" className="nav-link">About Us</Link>
 
-            {isLoggedIn && user ? (
+            {isLoggedIn ? (
               <>
-                {/* SHOW USERNAME HERE */}
-                <span className="nav-username">
-                  👤 {user.displayName || user.email}
-                </span>
-
+                {/* ✅ ALWAYS UPDATES */}
+                <span className="nav-username">👤 {username}</span>
                 <Link to="/dashboard" className="nav-link">Dashboard</Link>
-
                 <button onClick={handleLogout} className="btn btn-secondary">
                   Logout
                 </button>

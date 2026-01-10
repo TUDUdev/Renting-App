@@ -104,10 +104,11 @@
 /* Main Layout */
 .property-detail-layout {
   display: grid;
-  grid-template-columns: 1fr 350px;
+  grid-template-columns: minmax(0, 2.9fr) minmax(0, 1fr);
   gap: 40px;
   padding: 40px 0;
 }
+
 
 /* Main Content */
 .property-main-content {
@@ -748,3 +749,9 @@
 .thumbnail-gallery::-webkit-scrollbar-thumb:hover {
   background: #a8a8a8;
 }
+
+/* Ensure everything stays inside the rent card */
+.sticky-card {
+  overflow: hidden;
+}
+

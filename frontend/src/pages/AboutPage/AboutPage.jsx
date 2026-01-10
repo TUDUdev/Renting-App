@@ -2,6 +2,8 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import './AboutPage.css';
 import { Link,useNavigate } from 'react-router-dom';
+import SudarshanImg from '../../assets/team/sudarshan.jpg';
+
 
 const AboutPage = () => {
   const navigate = useNavigate();
@@ -10,7 +12,7 @@ const AboutPage = () => {
       id: 1,
       name: 'Sudarshan Tudu',
       role: 'CEO & Founder',
-      image: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=400&auto=format&fit=crop',
+      image: SudarshanImg,
       description: 'Real estate expert with 15+ years experience'
     },
     {
@@ -30,9 +32,10 @@ const AboutPage = () => {
         {
       id: 4,
       name: 'Kishan Paul',
-      role: 'HR',
-      image:'',
-      description:'xyz'
+      role: 'HR & Administration Head',
+      image: '',
+      description: 'Overseeing HR policies, compliance, and internal operations'
+
     }
   ];
 

@@ -1,40 +1,85 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { getAuth, updateProfile } from "firebase/auth";
 import "./Profile.css";
 
 const Profile = () => {
   const navigate = useNavigate();
-  const storedUser = JSON.parse(localStorage.getItem("user")) || {};
+  const auth = getAuth();
 
-  // Form state
-  const [displayName, setDisplayName] = useState(storedUser.displayName || "");
-  const [email, setEmail] = useState(storedUser.email || "");
-  const [phone, setPhone] = useState(storedUser.phone || "");
-  const [profilePic, setProfilePic] = useState(storedUser.profilePic || "");
+  const firebaseUser = auth.currentUser;
+  const storedUser = JSON.parse(localStorage.getItem("user"));
+
+  // ✅ NEVER EMPTY STATES
+  const [displayName, setDisplayName] = useState(
+    firebaseUser?.displayName || storedUser?.displayName || ""
+  );
+  const [email] = useState(
+    firebaseUser?.email || storedUser?.email || ""
+  );
+  const [phone, setPhone] = useState(storedUser?.phone || "");
+  const [profilePic, setProfilePic] = useState(
+    firebaseUser?.photoURL || storedUser?.profilePic || ""
+  );
   const [message, setMessage] = useState("");
 
+  // 🔐 Redirect if not logged in
   useEffect(() => {
-    if (!storedUser.email) {
-      navigate("/login"); // redirect if no user is logged in
+    if (!firebaseUser) {
+      navigate("/login");
+      return;
     }
-  }, [storedUser, navigate]);
 
-  // Handle profile update
-  const handleUpdate = () => {
-    const updatedUser = { ...storedUser, displayName, email, phone, profilePic };
-    localStorage.setItem("user", JSON.stringify(updatedUser));
-    setMessage("✅ Profile updated successfully!");
-    setTimeout(() => setMessage(""), 3000);
+    // 🔄 Sync latest Firebase data to localStorage
+    localStorage.setItem(
+      "user",
+      JSON.stringify({
+        email: firebaseUser.email,
+        displayName: firebaseUser.displayName,
+        profilePic: firebaseUser.photoURL,
+        phone: storedUser?.phone || "",
+      })
+    );
+  }, []);
+
+  // ✅ UPDATE PROFILE
+  const handleUpdate = async () => {
+    try {
+      if (!firebaseUser) return;
+
+      // Update Firebase Auth
+      await updateProfile(firebaseUser, {
+        displayName,
+        photoURL: profilePic || null,
+      });
+
+      // Update localStorage
+      const updatedUser = {
+        email,
+        displayName,
+        phone,
+        profilePic,
+      };
+      localStorage.setItem("user", JSON.stringify(updatedUser));
+
+      // 🔔 Notify Navbar
+      window.dispatchEvent(new Event("profileUpdated"));
+
+      setMessage("✅ Profile updated successfully!");
+      setTimeout(() => setMessage(""), 3000);
+    } catch (error) {
+      setMessage("❌ Failed to update profile");
+    }
   };
 
-  // Handle profile picture change
+  // 📸 Handle image upload
   const handleProfilePicChange = (e) => {
     const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = () => setProfilePic(reader.result); // store as base64
-      reader.readAsDataURL(file);
-    }
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = () => setProfilePic(reader.result);
+    reader.readAsDataURL(file);
   };
 
   return (
@@ -50,6 +95,7 @@ const Profile = () => {
             alt="Profile"
             className="profile-pic"
           />
+
           <input
             type="file"
             accept="image/*"
@@ -70,11 +116,7 @@ const Profile = () => {
 
           <label>
             Email:
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
+            <input type="email" value={email} disabled />
           </label>
 
           <label>
